@@ -12,6 +12,7 @@ production stylesheet in assets/built/screen.css
   4.2 Archive header
 5.  Site Navigation
 6.  Post Feed
+    6.1. Search Results
 7.  Single Post
   7.1. Post Byline
   7.2. Members Subscribe Form
@@ -242,11 +243,14 @@ body {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    padding: 10px 30px;
+    padding: 0 30px;
     margin: 0 auto;
     background: #EFF4FF;
     border-radius: 10px;
-    overflow-x: auto;
+    overflow-x: scroll;   
+    overflow-y: visible;  
+    height:46px;
+    align-items: center;
 }
 
 .tag-bar a {
@@ -254,13 +258,105 @@ body {
     color: #646E79;
     text-decoration: none;
     white-space: nowrap;
-    padding: 0 20px;
+    padding: 10px 20px;
+    
 }
 
 .tag-bar a:hover {
     color: #232E3B;
 }
 
+/*  Search bar */
+
+#search {
+    display: none;
+    width: 100%;
+    overflow: visible;
+}
+
+.ais-SearchBox-form input {
+    width: calc(100% - 30px);
+    border: none;
+    padding: 10px;
+    height: 26px;
+    background-color: #F0F4FB;
+    border: 1px solid transparent;
+    border-radius: 0;
+}
+
+.ais-SearchBox-form input::placeholder {
+    color: #A9AEB4;
+}
+
+.ais-SearchBox-form input:hover {
+    background-color: #F8FAFD;
+    height: 26px;
+}
+
+.ais-SearchBox-form input:focus {
+    background-color: #F8FAFD;
+    height: 26px;
+    border: 1px solid #D8E3F5
+}
+
+/* hides deault buttons and loader */
+.ais-SearchBox-submit,
+.ais-SearchBox-reset, 
+.ais-SearchBox-loadingIndicator {
+    display: none;
+}
+
+#search #hits {
+    position: absolute;
+    background-color: #D8E3F5;
+    z-index: 99999;
+    left: 0;
+    top: 46px;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    display: none;
+}
+
+#search #hits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#search #hits ul li {
+    padding: 0;
+    margin: 0;
+}
+
+
+#search #hits ul li a {
+    display: block;
+    width: full;
+    padding: 16px 16px;
+    margin: 0;
+    border-bottom: 1px solid white;
+    color: #646E79;
+    transition: all 0.15s;
+    white-space: normal;
+}
+
+#search #hits ul li:last-child a {
+    border-bottom: 1px solid transparent;
+}
+
+#search #hits ul li a:hover {
+    background-color: #E8EEF9;
+    color: #374351
+}
+
+#search #hits ul li a:active {
+    background-color: #D8E3F5;
+    color: #202E3D
+}
+
+
+
+/* ----------------------- */
 /* 4.2 Archive header (tag and author post lists)
 /* ---------------------------------------------------------- */
 
@@ -777,6 +873,209 @@ body {
     display: inline-block;
 }
 
+
+/*  6.1. Search Results */
+
+#postResults  {
+    display:none;
+    grid-template-columns: auto auto auto;
+    gap:25px;
+ 
+ }
+ #postResults .postResults-card:hover {
+    text-decoration: none;
+ }
+ #postResults .postResults-card {
+     border-radius:12px;
+     overflow: hidden;
+     display:block;
+ }
+ #postResults .postResults-card > img {
+     max-height: 155px;
+     object-fit: cover;
+     width:100%
+ }
+ #postResults .postResults-card >div {
+    padding: 16px
+ }
+ 
+ #postResults .postResults-card >div > * {
+     padding: 0;
+     margin:0 0 8px 0
+  }
+ 
+ #postResults .postResults-card >div p:first-of-type {
+    font-size: 12px;
+    font-weight:700;
+    color:#773DBD;
+    text-transform: uppercase;
+ }
+ #postResults .postResults-card >div h3 {
+    font-size: 24px;
+    font-weight:700;
+    color:#374351;
+ }
+ #postResults .postResults-card >div p:nth-of-type(2) {
+     font-size: 16px;
+     font-weight:400;
+     color:#4E5865;
+  }
+ #postResults .postResults-card >div .timestamp {
+     font-size: 13px;
+     font-weight:400;
+     color:#A9AEB4;
+  }
+ 
+  #postResults #noResults  {
+     text-align: center;
+     padding: 20px 20px;
+     font-size: 14px;
+     color:#646E79;
+     margin:0 auto;
+     grid-column: 1 / span 3;
+  
+  }
+ 
+  #postResults #noResults span{
+     font-weight: 700;
+     color:#374351
+  }
+  
+  #postResults #other-categories {
+     grid-column: 1 / span 3;
+  }
+  #postResults #other-categories h3{
+     font-size: 14px;
+     font-weight: 700;
+     color:#374351;
+     margin-bottom: 24px;
+  }
+  #postResults #other-categories > div{
+    display:flex;
+    gap:8px;
+    width:100%;
+  }
+  #postResults #other-categories >div a{
+     background-color: #F0F4FB;
+     border-radius: 8px;
+     color:#374351;
+     display:inline-block;
+     font-size: 14px;
+     font-weight: 700;
+     padding: 8px;
+     text-align: center;
+     width: 100%;
+  }
+  #postResults #other-categories >div a:hover{
+    text-decoration: none;
+  }
+ 
+  #postResults #latest-posts{
+     grid-column: 1 / span 3;
+  }
+  #postResults #latest-posts h3{
+     font-size: 14px;
+     font-weight: 700;
+     color:#374351;
+     margin-bottom: 24px;
+  }
+ 
+  #postResults #latest-posts > div{
+     display:grid;
+     grid-template-columns: auto auto auto;
+     gap:25px;
+  }
+  #postResults #latest-posts > div .latestPosts-card{
+   border-radius: 12px;
+   overflow: hidden;
+   display: block;
+   color:#374351;
+  }
+  #postResults #latest-posts > div .latestPosts-card:hover{
+      text-decoration: none;
+     }
+     
+ #postResults #latest-posts > div .latestPosts-card > div  {
+     padding: 16px
+  }
+ 
+ #postResults #latest-posts > div .latestPosts-card > div > * {
+     padding: 0;
+     margin:0 0 8px 0
+  }
+ 
+ #postResults #latest-posts > div .latestPosts-card img {
+     max-height: 155px;
+     object-fit: cover;
+     width:100%
+ }
+ #postResults #latest-posts > div .latestPosts-card p:first-of-type {
+     font-size: 12px;
+     font-weight:700;
+     color:#773DBD;
+     text-transform: uppercase;
+  }
+ 
+  #postResults #latest-posts > div .latestPosts-card > div > h3 {
+     font-size: 24px;
+     font-weight:700;
+     color:#374351;
+  }
+  #postResults #latest-posts > div .latestPosts-card p:nth-of-type(2) {
+      font-size: 16px;
+      font-weight:400;
+      color:#4E5865;
+   }
+  #postResults #latest-posts > div .latestPosts-card .timestamp {
+      font-size: 13px;
+      font-weight:400;
+      color:#A9AEB4;
+   }
+
+   /* Mobile */
+
+   @media screen and (max-width: 768px) {
+    #postResults  {
+        display:none;
+        grid-template-columns: 100%;
+        padding: 16px;
+     }
+     #postResults #noResults{
+        grid-column: 1 / span 1;
+        box-sizing: content-box;
+     }
+     #postResults #other-categories{
+        grid-column: 1 / span 1;
+     }
+     #postResults #other-categories h3{
+        font-size: 20px;
+        font-weight: 400;
+        width: 100%;
+        text-align: center;
+     }
+     #postResults #other-categories > div{
+        flex-direction: column;
+     }
+     #postResults #latest-posts {
+        grid-column: 1/span 1;
+    }
+     #postResults #latest-posts h3 {
+        font-size: 20px;
+        font-weight: 400;
+        width: 100%;
+        text-align: center;
+    }
+     #postResults #latest-posts > div {
+        grid-template-columns: 100%
+     }
+     
+     .inner-home {
+        width: calc(100% - 32px);
+        margin:0 auto;
+    }
+  }
+  
+
 /* Special Styling for home page grid (below):
 
 The first post in the list is styled to be bigger than the others and take over
@@ -961,7 +1260,7 @@ make sure this only happens on large viewports / desktop-ish devices.
 .post-full-content {
     position: relative;
     margin: 0 auto;
-    padding: 0 170px 6vw;
+    padding: 0 170px 2vw;
     min-height: 230px;
     font-family: Georgia, serif;
     font-size: 2.0rem;
@@ -1626,7 +1925,8 @@ Usage (In Ghost editor):
 /* 7.2. Members Subscribe Form
 /* ---------------------------------------------------------- */
 .subscribe-form {
-    margin: 1.5em 0;
+    margin: 0;
+    margin-bottom:24px;
     padding: 6.5vw 7vw 8vw;
     border: color(var(--lightgrey) l(+10%)) 1px solid;
     text-align: center;

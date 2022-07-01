@@ -1,95 +1,376 @@
-{{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
-
-<header class="site-header">
+{{!< default}} {{!-- The tag above means: insert everything in this file into the {body} of the default.hbs template
+    --}} <header class="site-header">
     {{> "site-header"}}
-</header>
+    </header>
 
-<div class="site-hero">
-    {{> header-background background=@site.cover_image}} {{!--Special header-image.hbs partial to generate the background image--}}
-    <div class="site-header-content">
-        <h1 class="site-title">Blog</h1>
-    </div>
-</div>
-
-{{!-- The main content area --}}
-<main id="site-main" class="site-main site-main-home outer">
-    <div class="inner-home">
-        <div class="tag-bar">
-            <a href="https://lightit.io/blog/">All</a>
-            <a href="https://lightit.io/blog/tag/healthcare/">Healthcare</a>
-            <a href="https://lightit.io/blog/tag/tech-guides/">Tech guides</a>
-            <a href="https://lightit.io/blog/tag/experience/">Experience</a>
-            <a href="https://lightit.io/blog/tag/digital-product/">Digital product</a>
-            <a href="https://lightit.io/blog/tag/design/">Design</a>
+    <div class="site-hero">
+        {{> header-background background=@site.cover_image}} {{!--Special header-image.hbs partial to generate the
+        background image--}}
+        <div class="site-header-content">
+            <h1 class="site-title">Blog</h1>
         </div>
-        <div class="inner posts">
-            <div class="post-feed">
-                {{#foreach posts}}
+    </div>
+
+    {{!-- The main content area --}}
+    <main id="site-main" class="site-main site-main-home outer">
+        <div class="inner-home">
+            <div class="tag-bar">
+                <div id="search">
+                    <div id="searchbox"></div>
+                    <div id="hits"></div>
+                </div>
+                <a class="tag-bar-link" href="https://lightit.io/blog/">All</a>
+                <a class="tag-bar-link" href="https://lightit.io/blog/tag/healthcare/">Healthcare</a>
+                <a class="tag-bar-link" href="https://lightit.io/blog/tag/tech-guides/">Tech guides</a>
+                <a class="tag-bar-link" href="https://lightit.io/blog/tag/experience/">Experience</a>
+                <a class="tag-bar-link" href="https://lightit.io/blog/tag/digital-product/">Digital product</a>
+                <a class="tag-bar-link" href="https://lightit.io/blog/tag/design/">Design</a>
+                <a id="tag-bar-button">{{> "icons/search"}}
+                </a>
+            </div>
+            <div class="inner posts">
+                <div id="postResults" class="post-feed post-feed-index">
+
+                </div>
+                <div id="posts-main" class="post-feed post-feed-index">
+                    {{#foreach posts}}
                     {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
                     {{> "post-card"}}
-                {{/foreach}}
+                    {{/foreach}}
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-{{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in default.hbs --}}
-{{#contentFor "scripts"}}
-<script>
+    {{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in
+    default.hbs --}}
+    {{#contentFor "scripts"}}
+    <script>
 
-    // NOTE: Scroll performance is poor in Safari
-    // - this appears to be due to the events firing much more slowly in Safari.
-    //   Dropping the scroll event and using only a raf loop results in smoother
-    //   scrolling but continuous processing even when not scrolling
-    $(document).ready(function () {
+        // NOTE: Scroll performance is poor in Safari
+        // - this appears to be due to the events firing much more slowly in Safari.
+        //   Dropping the scroll event and using only a raf loop results in smoother
+        //   scrolling but continuous processing even when not scrolling
+        $(document).ready(function () {
 
-        var nav = document.querySelector('.site-nav-main .site-nav');
-        var feed = document.querySelector('.post-feed');
+            var nav = document.querySelector('.site-nav-main .site-nav');
+            var feed = document.querySelector('.post-feed');
 
-        var lastScrollY = window.scrollY;
-        var lastWindowHeight = window.innerHeight;
-        var lastDocumentHeight = $(document).height();
-        var ticking = false;
+            var lastScrollY = window.scrollY;
+            var lastWindowHeight = window.innerHeight;
+            var lastDocumentHeight = $(document).height();
+            var ticking = false;
 
-        function onScroll() {
-            lastScrollY = window.scrollY;
-            requestTick();
-        }
-
-        function onResize() {
-            lastWindowHeight = window.innerHeight;
-            lastDocumentHeight = $(document).height();
-            requestTick();
-        }
-
-        function requestTick() {
-            if (!ticking) {
-                requestAnimationFrame(update);
+            function onScroll() {
+                lastScrollY = window.scrollY;
+                requestTick();
             }
-            ticking = true;
-        }
 
-        function update() {
-            var trigger = feed.getBoundingClientRect().top + window.scrollY;
-            var progressMax = lastDocumentHeight - lastWindowHeight;
+            function onResize() {
+                lastWindowHeight = window.innerHeight;
+                lastDocumentHeight = $(document).height();
+                requestTick();
+            }
 
-            // show/hide nav
-            if (lastScrollY >= trigger - 20) {
-                nav.classList.add('fixed-nav-active');
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(update);
+                }
+                ticking = true;
+            }
+
+            function update() {
+                var trigger = feed.getBoundingClientRect().top + window.scrollY;
+                var progressMax = lastDocumentHeight - lastWindowHeight;
+
+                // show/hide nav
+                if (lastScrollY >= trigger - 20) {
+                    nav.classList.add('fixed-nav-active');
+                } else {
+                    nav.classList.remove('fixed-nav-active');
+                }
+
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onResize, false);
+
+            update();
+
+
+
+        });
+    </script>
+
+    {{!-- code for search bar --}}
+
+    <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.5.1/dist/algoliasearch-lite.umd.js"
+        integrity="sha256-EXPXz4W6pQgfYY3yTpnDa3OH8/EPn16ciVsPQ/ypsjk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.8.3/dist/instantsearch.production.min.js"
+        integrity="sha256-LAGhRRdtVoD6RLo2qDQsU2mp+XVSciKRC8XPOBWmofM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
+        integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+
+        //search function
+        const searchClient = algoliasearch(
+            'JO96N74W9X',
+            'e2d31c4235e03cbe34a85148060f843f'
+        );
+        const search = instantsearch({
+            indexName: 'blog',
+            searchClient,
+        });
+
+
+        // 1. Create a render function
+        const renderHits = (renderOptions, isFirstRender) => {
+            const {
+                hits,
+                results,
+                query
+            } = renderOptions;
+
+            if (results !== undefined && results.query !== "") {
+
+                if (hits.length > 0) {
+                    hits.sort(function (a, b) {
+                        return a.title.localeCompare(b.title);
+                    })
+
+                    document.querySelector('#hits').innerHTML = `<ul>
+                    ${hits.map(item => `<li><a class="searchResult" href=${item.url} target="_blank">
+                    ${item.title}
+                    </a></li>`
+                    ).join('')}</ul>`
+
+                    const dateToString = (d) => {
+                        let date = new Date(d);
+                        const months = [
+                            'Jan',
+                            'Feb',
+                            'Mar',
+                            'Apr',
+                            'May',
+                            'Jun',
+                            'Jul',
+                            'Aug',
+                            'Sep',
+                            'Oct',
+                            'Nov',
+                            'Dec'
+                        ]
+                        const year = date.getFullYear()
+                        const monthName = months[date.getMonth()]
+                        const day = date.getDate()
+                        const fullDate = `${monthName} ${day}, ${year}`
+                        return fullDate
+
+                    }
+
+                    document.querySelector('#postResults').innerHTML = hits.map(item =>
+                        `<a href=${item.url} target="_blank" class="postResults-card" >
+                            <img src="${item.image}" alt="${item.title}"/>
+                            <div>
+                                <p>${item.tags[0].name}</p>
+                                <h3> ${item.title}</h3>
+                                <p>${item.custom_excerpt}</p>
+                                <p class="timestamp">${dateToString(item.published_at)}</p>
+                            </div>
+                        </a>`).join('');
+
+
+                } else {
+                    document.querySelector('#hits').innerHTML = ''
+
+                    document.querySelector('#postResults').innerHTML = `
+                    <div id="noResults">
+                       <span> Sorry, no results found</span> <br/>
+                        We can’t find anything with that term at the moment, try searching something else.
+                    </div>
+                    <div id="other-categories">
+                    <h3>Check our categories</h3>
+                    <div>
+                        <a href="https://lightit.io/blog/tag/tech-guides/">Tech guides</a>
+                        <a href="https://lightit.io/blog/tag/experience/">Experience</a>
+                        <a href="https://lightit.io/blog/tag/digital-product/">Digital product</a>
+                        <a href="https://lightit.io/blog/tag/healthcare/">Healthcare</a>
+                        <a href="https://lightit.io/blog/tag/design/">Design</a>
+                    </div>
+                    </div>
+                    <div id="latest-posts">
+                    <h3>Check our latest posts</h3>
+                    <div>
+                            {{#foreach posts limit="3"}}
+                            <a href="https://lightit.io/blog/{{slug}}" target="_blank" class="latestPosts-card">
+                                <img src="{{img_url feature_image }}"  alt="{{title}}">
+                                <div>
+                                    {{#if primary_tag}}
+                                        {{#primary_tag}}
+                                            <p>{{name}}</p>
+                                        {{/primary_tag}}
+                                    {{/if}}
+                                    <h3> {{ title }}</h3>
+                                    <p>{{ excerpt }}</p>
+                                    <p class="timestamp" >{{date published_at format="MMMM DD, YYYY"}}</p>
+                                </div>
+                            </a>
+                            {{/foreach}}
+                    </div>
+                    </div>`
+                }
+
+
+
             } else {
-                nav.classList.remove('fixed-nav-active');
+                document.querySelector('#hits').innerHTML = "";
             }
 
-            ticking = false;
+
+
+        };
+
+        // 2. Create the custom widget
+        const customHits = instantsearch.connectors.connectHits(
+            renderHits
+        );
+
+        // 3. Instantiate
+
+
+        search.addWidgets([
+            instantsearch.widgets.searchBox({
+                container: '#searchbox',
+                placeholder: 'Search',
+
+            }),
+
+            customHits({
+
+            }),
+        ]);
+
+        function googleAnalyticsMiddleware() {
+            const sendEventDebounced = _.debounce((uiState) => {
+                let query = document.querySelectorAll(".ais-SearchBox-input")[0].value;
+                console.log(query)
+                window.ga('set', 'page', window.location.pathname + query);
+                window.ga('send', 'pageView');
+            }, 3000);
+
+            return {
+                onStateChange({ uiState }) {
+                    sendEventDebounced(uiState);
+                },
+                subscribe() { },
+                unsubscribe() { },
+            };
         }
 
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onResize, false);
+        search.use(googleAnalyticsMiddleware);
+        search.start();
 
-        update();
+        //searchbar
 
-    });
-</script>
-{{/contentFor}}
+        let searchBarVisible = false;
+
+
+        let searchInput = document.querySelector(".ais-SearchBox-form input");
+
+        searchInput.addEventListener('keypress', function (event) {
+            if (event.key === "Enter") {
+                document.querySelector('#postResults').style.display = "grid"
+                document.querySelector('#hits').style.display = "none"
+                document.querySelector('#posts-main').style.display = "none"
+                event.preventDefault();
+            } else {
+                document.querySelector('#hits').style.display = "block"
+            }
+        })
+        document.querySelector("#tag-bar-button").addEventListener('click', toggleSearchBar)
+
+
+
+        function toggleSearchBar() {
+            if (!searchBarVisible) {
+                showSearchBar();
+                adjustHitsDiv();
+            } else {
+                hideSearchBar();
+            }
+        }
+
+        function showSearchBar() {
+
+            //empty input value
+            document.getElementsByClassName("ais-SearchBox-reset")[0].click();
+
+            //hide tags 
+            const tags = document.querySelectorAll(".tag-bar-link")
+
+            for (let i = 0; i < tags.length; i++) {
+                tags[i].style.display = 'none';
+            }
+
+            //display search and results
+            document.querySelector("#search").style.display = 'block'
+            document.querySelector("#hits").style.display = 'block'
+            searchInput.focus();
+
+            //change search icon for close
+            document.querySelector("#tag-bar-button").innerHTML = `{{> "icons/close"}}`
+
+            searchBarVisible = true
+
+
+        }
+
+        function hideSearchBar() {
+
+            //display tags
+            const tags = document.querySelectorAll(".tag-bar-link")
+
+            for (let i = 0; i < tags.length; i++) {
+                tags[i].style.display = 'inline-block';
+            }
+
+            //hide searchbox, results and reset input
+            document.querySelector("#search").style.display = 'none'
+            document.querySelector("#hits").style.display = 'none'
+
+            //change close icon for search
+            document.querySelector("#tag-bar-button").innerHTML = `{{> "icons/search"}}`
+
+            //hide results div
+            document.querySelector('#postResults').style.display = "none"
+
+            // show main div
+            document.querySelector('#posts-main').style.display = "flex"
+
+            searchBarVisible = false
+
+        }
+
+
+        function adjustHitsDiv() {
+
+            //adjusts width and position of "#hits" div
+            const searchBox = document.querySelector('#searchbox');
+
+            let searchBoxWidth = searchBox.offsetWidth;
+            let searchBoxLeft = searchBox.getBoundingClientRect().left;
+
+
+            document.querySelector("#hits").style.width = `${searchBoxWidth - 8}px`;
+            document.querySelector("#hits").style.left = `${searchBoxLeft}px`;
+        }
+
+        //adjust "#hits div width and position whenever the window is resized"
+        window.onresize = adjustHitsDiv;
+
+    </script>
+
+    {{/contentFor}}
