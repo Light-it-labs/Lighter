@@ -122,7 +122,7 @@ body {
     .home-template .post-feed,
     .tag-template .post-feed,
     .author-template .post-feed {
-        padding: 40px 0 5vw;
+        padding: 40px 0 0;
         border-top-left-radius: 3px;
         border-top-right-radius: 3px;
     }
@@ -1789,9 +1789,31 @@ Usage (In Ghost editor):
     background: #7445FC;
 }
 
-.subscribe-form button:active,
-.subscribe-form button:focus {
-    background: color(var(--purple) lightness(-9%) saturation(-10%));
+.flex-centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.primary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0 10px;
+    padding: 10px 18px;
+    height: 40px;
+    color: #FCFCFC;
+    font-weight: bold;
+    background: #7445FC;
+    border-radius: 30px;
+
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.primary-button:hover {
+    opacity: 0.9;
+    background: #7445FC;
 }
 
 .subscribe-form .button-loader,
